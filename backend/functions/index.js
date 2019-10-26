@@ -43,3 +43,33 @@ exports.insertSeedsToEnterAndLeave = functions
       .then(() => console.log("inserted seeds."))
       .catch(e => console.log(e.message));
   });
+
+// 後で名前変える
+exports.sample = fucntions
+  .region(locationId)
+  .pubsub.topic("getAllEnterAndLeaves")
+  .onPublish(async message => {
+    const enterAndLeaves = await getAllEnterAndLeaves();
+
+    // データ集計API叩く
+    //
+    // 集計データを元に込具合を更新
+  });
+
+const getAllEnterAndLeaves = () => {
+  let result = [];
+
+  enterAndLeavesRef
+    .get()
+    .then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        let data = doc.data();
+        data.enteringTime = data.enteringTime.toDate();
+        data.liavingTime = data.leavingTime.toDate();
+
+        result.push(data);
+      });
+      return result;
+    })
+    .catch(e => console.log(e.message));
+};
