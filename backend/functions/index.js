@@ -17,16 +17,15 @@ exports.insertSeedsToStores = functions
   .https.onRequest((req, res) => {
     const batch = db.batch();
 
-    const count = 10;
+    const count = 50;
 
-    const latMax = 33.597856;
-    const latMin = 33.578032;
-    const lngMax = 130.433399;
-    const lngMin = 130.392072;
+    const latMax = 33.59408037465117;
+    const latMin = 33.58537540575935;
+    const lngMax = 130.42475031352234;
+    const lngMin = 130.41670368647766;
 
-    // TODO: 小数点第6位まで
     const randRange = (min, max) =>
-      Math.floor((Math.random() * (max - min + 1) + min) * 1000000) / 1000000;;
+      Math.floor((Math.random() * (max - min) + min) * 1000000) / 1000000;
 
     _.times(count, i => {
       const data = {
@@ -34,7 +33,33 @@ exports.insertSeedsToStores = functions
         location: {
           lat: randRange(latMin, latMax),
           lng: randRange(lngMin, lngMax)
-        }
+        },
+        tel: "000-0000-0000",
+        businessHour: {
+          open: new Date(),
+          close: new Date(),
+          holiday: "不定休"
+        },
+        menu: [
+          {
+            name: "ラーメン",
+            price: 600,
+            imageUrl:
+              "https://firebasestorage.googleapis.com/v0/b/going-now-e954f.appspot.com/o/%E3%83%A9%E3%83%BC%E3%83%A1%E3%83%B31.jpeg?alt=media&token=b6f593a2-2db7-4e35-8a89-b82f6b6c3e8d"
+          },
+          {
+            name: "特製ラーメン",
+            price: 1000,
+            imageUrl:
+              "https://firebasestorage.googleapis.com/v0/b/going-now-e954f.appspot.com/o/%E3%83%A9%E3%83%BC%E3%83%A1%E3%83%B32.jpeg?alt=media&token=b214bb7a-3e00-4256-ad2f-7de67f596cbc"
+          },
+          {
+            name: "オリジナルラーメン",
+            price: 1500,
+            imageUrl:
+              "https://firebasestorage.googleapis.com/v0/b/going-now-e954f.appspot.com/o/%E3%83%A9%E3%83%BC%E3%83%A1%E3%83%B32.jpeg?alt=media&token=b214bb7a-3e00-4256-ad2f-7de67f596cbc"
+          }
+        ]
       };
 
       batch.set(storesRef.doc(), data);
@@ -96,30 +121,28 @@ exports.insertSeedsToEnterAndLeave = functions
   });
 
 // 後で名前変える
-exports.AggregateStayingTime= functions
-   .region(locationId)
-   .https
-   .onRequest(async (req, res) => {
-     const enterAndLeaves = await getAllEnterAndLeaves();
- 
-     // データ集計API叩く
-     console.log(enterAndLeaves)
-     res.send(enterAndLeaves)
-     //
-     // 集計データを元に込具合を更新
-   });
+exports.AggregateStayingTime = functions
+  .region(locationId)
+  .https.onRequest(async (req, res) => {
+    const enterAndLeaves = await getAllEnterAndLeaves();
+
+    // データ集計API叩く
+    console.log(enterAndLeaves);
+    res.send(enterAndLeaves);
+    //
+    // 集計データを元に込具合を更新
+  });
 //exports.AggregateStayingTime= functions
 //   .region(locationId)
 //   .pubsub.topic("getAllEnterAndLeaves")
 //   .onPublish(async message => {
 //     const enterAndLeaves = await getAllEnterAndLeaves();
-// 
+//
 //     // データ集計API叩く
 //     console.log(enterAndLeaves)
 //     //
 //     // 集計データを元に込具合を更新
 //   });
-
 
 const getAllEnterAndLeaves = () => {
   let result = [];
@@ -138,5 +161,3 @@ const getAllEnterAndLeaves = () => {
     })
     .catch(e => console.log(e.message));
 };
-
-
