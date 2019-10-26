@@ -15,33 +15,36 @@ exports.insertSeedsToEnterAndLeave = functions
   .region(locationId)
   .https.onRequest((req, res) => {
     const batch = db.batch();
-
-    const dateCount = 5;
-    const logCount = 10;
+    const count = 10;
 
     // 第一引数分繰り返し
-    _.times(dateCount, () => {
-      const log = [];
+      _.times(count, () => {
+	//seedで入れた店舗をランダムでどれか取得するコード追加
+	var year = Math.floor( Math.random() * (2019 + 1 - 2017) ) + 2017 ;
+	var month = Math.floor( Math.random() * (12 + 1 - 1) ) + 1 ;
+	var day = Math.floor( Math.random() * (30 + 1 - 1) ) + 1 ;
+	var hour = Math.floor( Math.random() * (23 + 1 - 0) ) + 0 ;
+	var min = Math.floor( Math.random() * (60 + 1 - 1) ) + 1 ;
+	var sec = Math.floor( Math.random() * (60 + 1 - 1) ) + 1 ;
+	var date = new Date( year, month, day, hour, min, sec ) ;
+	var l_min = Math.floor( Math.random() * (150 + 1 - 30) ) + 30 ;
+	var l_date = new Date(date.getTime()) ;
+	l_date.setMinutes(l_date.getMinutes() - l_min) ;
+	l_date = new Date(l_date);
 
-      _.times(logCount, () => {
-        log.push({
+	var data = {
           userId: uuid(),
-          enteringTime: "ランダムな時間",
-          leavingTime: "ランダムな時間"
-        });
+	  storeId: ,
+          enteringTime: date,
+          leavingTime: l_date
+        };
+	batch.set(enterAndLeavesRef.doc(), data);
       });
-
-      const data = {
-        date: "日付を連番で",
-        log
-      };
-      batch.set(enterAndLeavesRef.doc(), data);
-    });
 
     return batch
       .commit()
-      .then(() => console.log("inserted seeds."))
-      .catch(e => console.log(e.message));
+      .then(() => res.status(200).send("success created seed."))
+      .catch(e => res.status(500).send("faild created seed."));
   });
 
 // 後で名前変える
