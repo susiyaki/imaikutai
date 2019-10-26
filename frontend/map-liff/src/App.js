@@ -3,6 +3,8 @@ import styled from "@emotion/styled";
 import { db } from "./firebase";
 import GoogleMapReact from "google-map-react";
 import StoreDetail from "./StoreDetail";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 
 export default class extends React.Component {
   state = {
@@ -16,20 +18,25 @@ export default class extends React.Component {
     defaultZoom: 16
   };
 
-  componentDidMount = async () => {
+  componentDidMount() {
     this.getUrlParam();
-  };
+  }
 
   getUrlParam = () => {
     const url = window.location.search;
     const location = url.slice(1).split("&");
-    const lat = parseFloat(location[0].split("=")[1]);
-    const lng = parseFloat(location[1].split("=")[1]);
-
-    this.setState({ presentLocation: { lat, lng } });
+    if (location.length !== 1) {
+      const lat = parseFloat(location[0].split("=")[1]);
+      const lng = parseFloat(location[1].split("=")[1]);
+      this.setState({ presentLocation: { lat, lng } });
+    } else {
+      const { defaultCenter } = this.state;
+      this.setState({ defaultCenter });
+    }
   };
 
   fetchStoreLocations = async (latMax, latMin, lngMax, lngMin) => {
+    console.log("call");
     const stores = await db
       .collection("Stores")
       .where("location.lat", "<", latMax)
@@ -60,25 +67,28 @@ export default class extends React.Component {
     this.setState({ selectedStore });
   };
 
-  handleBoundsChange = (center, zoom, bounds, marginBounds) => {
-    const latMax = bounds[0];
-    const latMin = bounds[2];
-    const lngMax = bounds[3];
-    const lngMin = bounds[1];
+  handleBoundsChange = e => {
+    const latMax = e.bounds.nw.lat;
+    const latMin = e.bounds.se.lat;
+    const lngMax = e.bounds.se.lng;
+    const lngMin = e.bounds.nw.lng;
 
     this.fetchStoreLocations(latMax, latMin, lngMax, lngMin);
   };
 
   render() {
-    const { presentLocation } = this.state;
-    const { stores, selectedStore, defaultZoom, defaultCenter } = this.state;
+    const {
+      presentLocation,
+      stores,
+      selectedStore,
+      defaultZoom,
+      defaultCenter
+    } = this.state;
 
     return (
       <Wrap width="100%">
-        <Wrap height="40vh">
-          <StoreDetail store={selectedStore} />
-        </Wrap>
-        <Wrap height="60vh">
+        <StoreDetail store={selectedStore} />
+        <Wrap height="50vh">
           <GoogleMapReact
             bootstrapURLKeys={{
               key: process.env.REACT_APP_GOOGLE_MAP_API_KEY
@@ -86,16 +96,21 @@ export default class extends React.Component {
             defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
             center={presentLocation}
-            onBoundsChange={this.handleBoundsChange}>
+            onChange={this.handleBoundsChange}>
+            <Pin
+              lat={presentLocation.lat}
+              lng={presentLocation.lng}
+              color="blue"
+            />
             {stores &&
               stores.map((store, index) => (
                 <Pin
                   key={index}
                   lat={store.location.lat}
                   lng={store.location.lng}
-                  onClick={() => this.handleClickPin(store.docId)}>
-                  ▼
-                </Pin>
+                  onClick={() => this.handleClickPin(store.docId)}
+                  color="orange"
+                />
               ))}
           </GoogleMapReact>
         </Wrap>
@@ -109,6 +124,14 @@ const Wrap = styled.div`
   width: ${props => props.width};
   padding: ${props => props.padding};
 `;
-const Pin = styled.div`
-  color: red;
-`;
+
+const Pin = ({ color, lat, lng, onClick }) => (
+  <FontAwesomeIcon
+    icon={faMapMarkerAlt}
+    color={color}
+    size="2x"
+    lat={lat}
+    lng={lng}
+    onClick={onClick}
+  />
+);
