@@ -2,6 +2,7 @@ import React from "react";
 import styled from "@emotion/styled";
 
 export default ({ store }) => {
+  console.log(store);
   return (
     <Wrap
       bgColor="#20283a"
@@ -10,7 +11,9 @@ export default ({ store }) => {
       padding=""
       justifyContent="space-around">
       <Wrap>
-        <Typography>image</Typography>
+        {store.menu && store.menu.imageUrl && (
+          <Image src={store.menu.imageUrl} />
+        )}
         <Typography>○席空きあり</Typography>
         <Typography>現在地から○m</Typography>
       </Wrap>
@@ -38,4 +41,9 @@ const Wrap = styled.div`
 
 const Typography = styled.div`
   color: white;
+`;
+
+const Image = styled.img`
+  height: "60%";
+  width: "100%";
 `;
