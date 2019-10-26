@@ -2,36 +2,38 @@ import React from "react";
 import styled from "@emotion/styled";
 import { db } from "./firebase";
 import GoogleMapReact from "google-map-react";
-import ShopDetail from "./ShopDetail";
+import StoreDetail from "./StoreDetail";
 
 export default class extends React.Component {
   state = {
     presentLocation: {
-      lat: 0,
-      lng: 0
+      lat: 33.589728,
+      lng: 130.420727
     },
-    shops: [],
-    loading: true,
-    selectedShop: {}
+    stores: [],
+    selectedStore: {},
+    defaultLatLng: { lat: 33.589728, lng: 130.420727 },
+    defaultZoom: 16
   };
 
   componentDidMount = async () => {
     this.getUrlParam();
-    this.fetchShopLocations();
   };
 
   getUrlParam = () => {
     const url = window.location.search;
     const location = url.slice(1).split("&");
-    const lat = parseInt(location[0].split("=")[1]);
-    const lng = parseInt(location[1].split("=")[1]);
+    const lat = parseFloat(location[0].split("=")[1]);
+    const lng = parseFloat(location[1].split("=")[1]);
 
     this.setState({ presentLocation: { lat, lng } });
   };
 
-  fetchShopLocations = async () => {
-    const shops = await db
-      .collection("Shops")
+  fetchStoreLocations = async (latMax, latMin, lngMax, lngMin) => {
+    const stores = await db
+      .collection("Stores")
+      .where("location.lat", "<", latMax)
+      .where("location.lat", ">", latMin)
       .get()
       .then(querySnapshot => {
         let result = [];
@@ -40,49 +42,62 @@ export default class extends React.Component {
             docId: doc.id,
             ...doc.data()
           };
-          result.push(data);
+
+          if (data.location.lng > lngMin && data.location.lng < lngMax) {
+            result.push(data);
+          }
         });
         return result;
       });
 
-    this.setState({ shops, loading: false });
+    this.setState({ stores });
   };
 
   handleClickPin = docId => {
-    const { shops } = this.state;
-    const selectedShop = shops.find(shop => shop.docId === docId);
-    this.setState({ selectedShop });
+    const { stores } = this.state;
+    const selectedStore = stores.find(store => store.docId === docId);
+
+    this.setState({ selectedStore });
+  };
+
+  handleBoundsChange = (center, zoom, bounds, marginBounds) => {
+    const latMax = bounds[0];
+    const latMin = bounds[2];
+    const lngMax = bounds[3];
+    const lngMin = bounds[1];
+
+    this.fetchStoreLocations(latMax, latMin, lngMax, lngMin);
   };
 
   render() {
-    const { lat, lng } = this.state.presentLocation;
-    const { shops, loading, selectedShop } = this.state;
+    const { presentLocation } = this.state;
+    const { stores, selectedStore, defaultZoom, defaultCenter } = this.state;
 
     return (
       <Wrap width="100%">
         <Wrap height="40vh">
-          <ShopDetail shop={selectedShop} />
+          <StoreDetail store={selectedStore} />
         </Wrap>
         <Wrap height="60vh">
-          {!loading && (
-            <GoogleMapReact
-              bootstrapURLKeys={{
-                key: process.env.REACT_APP_GOOGLE_MAP_API_KEY
-              }}
-              defaultCenter={{ lat, lng }}
-              defaultZoom={3}>
-              {shops &&
-                shops.map((shop, index) => (
-                  <Pin
-                    key={index}
-                    lat={shop.location.lat}
-                    lng={shop.location.lng}
-                    onClick={() => this.handleClickPin(shop.docId)}>
-                    ▼
-                  </Pin>
-                ))}
-            </GoogleMapReact>
-          )}
+          <GoogleMapReact
+            bootstrapURLKeys={{
+              key: process.env.REACT_APP_GOOGLE_MAP_API_KEY
+            }}
+            defaultCenter={defaultCenter}
+            defaultZoom={defaultZoom}
+            center={presentLocation}
+            onBoundsChange={this.handleBoundsChange}>
+            {stores &&
+              stores.map((store, index) => (
+                <Pin
+                  key={index}
+                  lat={store.location.lat}
+                  lng={store.location.lng}
+                  onClick={() => this.handleClickPin(store.docId)}>
+                  ▼
+                </Pin>
+              ))}
+          </GoogleMapReact>
         </Wrap>
       </Wrap>
     );
