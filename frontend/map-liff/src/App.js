@@ -14,7 +14,6 @@ export default class extends React.Component {
     },
     stores: [],
     selectedStore: {},
-    defaultLatLng: { lat: 33.589728, lng: 130.420727 },
     defaultZoom: 16
   };
 
@@ -30,13 +29,12 @@ export default class extends React.Component {
       const lng = parseFloat(location[1].split("=")[1]);
       this.setState({ presentLocation: { lat, lng } });
     } else {
-      const { defaultCenter } = this.state;
-      this.setState({ defaultCenter });
+      const defaultLatLng = { lat: 33.589728, lng: 130.420727 };
+      this.setState({ presentLocation: defaultLatLng });
     }
   };
 
   fetchStoreLocations = async (latMax, latMin, lngMax, lngMin) => {
-    console.log("call");
     const stores = await db
       .collection("Stores")
       .where("location.lat", "<", latMax)
@@ -61,8 +59,14 @@ export default class extends React.Component {
   };
 
   handleClickPin = docId => {
-    const { stores } = this.state;
+    const { stores, presentLocation } = this.state;
     const selectedStore = stores.find(store => store.docId === docId);
+
+    const directionsAPI = `https://maps.googleapis.com/maps/api/directions/json?origin=${`${presentLocation.lat},${presentLocation.lng}`}&destination=${`${selectedStore.location.lat},${selectedStore.location.lng}`}&key=${
+      process.env.REACT_APP_GOOGLE_MAP_API_KEY
+    }`;
+
+    fetch(directionsAPI).then(res => console.log(res));
 
     this.setState({ selectedStore });
   };
@@ -77,13 +81,7 @@ export default class extends React.Component {
   };
 
   render() {
-    const {
-      presentLocation,
-      stores,
-      selectedStore,
-      defaultZoom,
-      defaultCenter
-    } = this.state;
+    const { presentLocation, stores, selectedStore, defaultZoom } = this.state;
 
     return (
       <Wrap width="100%">
@@ -93,7 +91,6 @@ export default class extends React.Component {
             bootstrapURLKeys={{
               key: process.env.REACT_APP_GOOGLE_MAP_API_KEY
             }}
-            defaultCenter={defaultCenter}
             defaultZoom={defaultZoom}
             center={presentLocation}
             onChange={this.handleBoundsChange}>

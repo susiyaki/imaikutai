@@ -9,11 +9,20 @@ export default ({ store }) => {
     <Wrap bgColor="#20283a" height="50vh">
       {store.docId ? (
         <>
-          <Wrap alignItems="flex-end" height="40%">
-            <Wrap alignItems="center" height="100%" width="50%">
+          <Wrap justifyContent="flex-start" height="40%">
+            <Wrap
+              alignItems="center"
+              height="100%"
+              width="50%"
+              margin="0 0 0 5%">
               <Thumbnail url={store.thumbnailUrl} />
             </Wrap>
-            <Wrap width="50%">
+            <Wrap
+              width="45%"
+              height="100%"
+              justifyContent="center"
+              alignItems="center"
+              flexDirection="column">
               <Typography>○席空きあり</Typography>
               <Typography>現在地から○m</Typography>
             </Wrap>
@@ -60,11 +69,13 @@ const Wrap = styled.div`
   background-color: ${props => props.bgColor};
   height: ${props => props.height};
   width: ${props => props.width};
+  margin: ${props => props.margin};
   padding: ${props => props.padding};
   display: ${props =>
     props.justifyContent || props.alignItems ? "flex" : "block"};
   justify-content: ${props => props.justifyContent};
   align-items: ${props => props.alignItems};
+  flex-direction: ${props => props.flexDirection};
 `;
 
 const Typography = styled.div`
