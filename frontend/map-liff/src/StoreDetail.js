@@ -28,16 +28,32 @@ export default ({ store }) => {
             </Wrap>
           </Wrap>
           <Wrap height="40%" padding="0 5%">
-            <Typography>店名：　{store.name}</Typography>
-            <Typography>住所：　{store.name}</Typography>
-            <Typography>Tel：　{store.tel}</Typography>
-            <Typography>
-              営業時間：　
-              {`${dayjs(store.businessHour.open.toDate()).format(
-                "hh:mm"
-              )} ~ ${dayjs(store.businessHour.close.toDate()).format("hh:mm")}`}
-            </Typography>
-            <Typography>休日：　{store.businessHour.holiday}</Typography>
+            <Wrap justifyContent="flex-start">
+              <Typography width="5rem">店名</Typography>
+              <Typography>{store.name}</Typography>
+            </Wrap>
+            <Wrap justifyContent="flex-start">
+              <Typography width="5rem">住所</Typography>
+              <Typography>{store.name}</Typography>
+            </Wrap>
+            <Wrap justifyContent="flex-start">
+              <Typography width="5rem">電話番号</Typography>
+              <Typography>{store.tel}</Typography>
+            </Wrap>
+            <Wrap justifyContent="flex-start">
+              <Typography width="5rem">営業時間</Typography>
+              <Typography>
+                {`${dayjs(store.businessHour.open.toDate()).format(
+                  "hh:mm"
+                )} ~ ${dayjs(store.businessHour.close.toDate()).format(
+                  "hh:mm"
+                )}`}
+              </Typography>
+            </Wrap>
+            <Wrap justifyContent="flex-start">
+              <Typography width="5rem">店休日</Typography>
+              <Typography>{store.businessHour.holiday}</Typography>
+            </Wrap>
           </Wrap>
           <Wrap
             width="100%"
@@ -78,8 +94,13 @@ const Wrap = styled.div`
   flex-direction: ${props => props.flexDirection};
 `;
 
+const ColumnTitle = styled.span`
+  color: white;
+  width: 4rem;
+`;
 const Typography = styled.div`
   color: white;
+  width: ${props => props.width};
   font-size: ${props => (props.size ? props.size : "1rem")};
 `;
 
