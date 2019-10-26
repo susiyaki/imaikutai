@@ -45,7 +45,7 @@ export default ({ store }) => {
             justifyContent="center"
             alignItems="center">
             <Button
-              href={`https://maps.google.com/maps/@${store.location.lat},${store.location.lng},10z`}>
+              href={`https://maps.google.com/maps?q=${store.location.lat},${store.location.lng}`}>
               <Typography size="1.5rem">マップで開く</Typography>
             </Button>
           </Wrap>
