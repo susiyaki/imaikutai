@@ -40,6 +40,6 @@ exports.insertSeedsToEnterAndLeave = functions
 
     return batch
       .commit()
-      .then(() => console.log("inserted seeds."))
-      .catch(e => console.log(e.message));
+      .then(() => res.status(200).send("success created seed."))
+      .catch(e => res.status(500).send("faild created seed."));
   });
