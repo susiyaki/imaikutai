@@ -25,7 +25,7 @@ exports.insertSeedsToStores = functions
     const lngMin = 130.41670368647766;
 
     const randRange = (min, max) =>
-      Math.floor((Math.random() * (max - min + 1) + min) * 1000000) / 1000000;
+      Math.floor((Math.random() * (max - min) + min) * 1000000) / 1000000;
 
     _.times(count, i => {
       const data = {
