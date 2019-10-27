@@ -3,8 +3,15 @@ import styled from "@emotion/styled";
 import dayjs from "dayjs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
+import Wrap from "../components/Wrap";
 
-export default ({ store }) => {
+export default ({ store, history }) => {
+  const handleClickOpenMap = location => {
+    window.open(
+      `https://maps.google.com/maps?q=${location.lat},${location.lng}`
+    );
+  };
+
   return (
     <Wrap bgColor="#20283a" height="50vh">
       {store.docId ? (
@@ -23,8 +30,10 @@ export default ({ store }) => {
               justifyContent="center"
               alignItems="center"
               flexDirection="column">
-              <Typography>○席空きあり</Typography>
-              <Typography>現在地から○m</Typography>
+              <Typography>
+                空席数 {store.filledSeats} / {store.seats}
+              </Typography>
+              {/* <Typography>現在地から○m</Typography> */}
             </Wrap>
           </Wrap>
           <Wrap height="40%" padding="0 5%">
@@ -58,11 +67,13 @@ export default ({ store }) => {
           <Wrap
             width="100%"
             height="20%"
-            justifyContent="center"
+            justifyContent="space-around"
             alignItems="center">
-            <Button
-              href={`https://maps.google.com/maps?q=${store.location.lat},${store.location.lng}`}>
+            <Button onClick={() => handleClickOpenMap(store.location)}>
               <Typography size="1.5rem">マップで開く</Typography>
+            </Button>
+            <Button onClick={() => history.push("/menus", store)}>
+              <Typography size="1.5rem">メニュー</Typography>
             </Button>
           </Wrap>
         </>
@@ -80,19 +91,6 @@ export default ({ store }) => {
     </Wrap>
   );
 };
-
-const Wrap = styled.div`
-  background-color: ${props => props.bgColor};
-  height: ${props => props.height};
-  width: ${props => props.width};
-  margin: ${props => props.margin};
-  padding: ${props => props.padding};
-  display: ${props =>
-    props.justifyContent || props.alignItems ? "flex" : "block"};
-  justify-content: ${props => props.justifyContent};
-  align-items: ${props => props.alignItems};
-  flex-direction: ${props => props.flexDirection};
-`;
 
 const ColumnTitle = styled.span`
   color: white;
@@ -113,13 +111,13 @@ const Thumbnail = styled.div`
   width: 100%;
 `;
 
-const Button = styled.a`
+const Button = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
 
   background-color: orange;
   height: 70%;
-  width: 80%;
+  width: 40%;
   border-radius: 5px;
 `;

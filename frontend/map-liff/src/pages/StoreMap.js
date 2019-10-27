@@ -1,10 +1,14 @@
 import React from "react";
-import styled from "@emotion/styled";
 import { db } from "../firebase";
 import GoogleMapReact from "google-map-react";
 import StoreDetail from "../components/StoreDetail";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
+import Wrap from "../components/Wrap";
+
+// const googleMapsClient = require("@google/maps").createClient({
+//   key: process.env.REACT_APP_GOOGLE_MAP_API_KEY
+// });
 
 export default class extends React.Component {
   state = {
@@ -58,15 +62,20 @@ export default class extends React.Component {
     this.setState({ stores });
   };
 
-  handleClickPin = docId => {
-    const { stores, presentLocation } = this.state;
+  handleClickPin = async docId => {
+    const { stores /* , presentLocation */ } = this.state;
     const selectedStore = stores.find(store => store.docId === docId);
 
-    const directionsAPI = `https://maps.googleapis.com/maps/api/directions/json?origin=${`${presentLocation.lat},${presentLocation.lng}`}&destination=${`${selectedStore.location.lat},${selectedStore.location.lng}`}&key=${
-      process.env.REACT_APP_GOOGLE_MAP_API_KEY
-    }`;
-
-    fetch(directionsAPI).then(res => console.log(res));
+    // const res = await googleMapsClient.directions(
+    //   {
+    //     origin: [presentLocation.lat, presentLocation.lng],
+    //     destination: [selectedStore.location.lat, selectedStore.location.lng]
+    //   },
+    //   res => {
+    //     return res;
+    //   }
+    // );
+    // console.log(res);
 
     this.setState({ selectedStore });
   };
@@ -85,7 +94,7 @@ export default class extends React.Component {
 
     return (
       <Wrap width="100%">
-        <StoreDetail store={selectedStore} />
+        <StoreDetail store={selectedStore} history={this.props.history} />
         <Wrap height="50vh">
           <GoogleMapReact
             bootstrapURLKeys={{
@@ -115,12 +124,6 @@ export default class extends React.Component {
     );
   }
 }
-
-const Wrap = styled.div`
-  height: ${props => props.height};
-  width: ${props => props.width};
-  padding: ${props => props.padding};
-`;
 
 const Pin = ({ color, lat, lng, onClick }) => (
   <FontAwesomeIcon

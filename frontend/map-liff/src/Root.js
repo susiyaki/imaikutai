@@ -35,8 +35,8 @@ export default class extends React.Component {
     return (
       <Router history={createBrowserHistory()}>
         <Switch>
-          <Route path="/maps" component={StoreMap} />
-          <Route path="/menus" component={StoreMenu} />
+          <Route exact path="/menus" component={StoreMenu} />
+          <Route exact path="/" component={StoreMap} />
         </Switch>
       </Router>
     );
