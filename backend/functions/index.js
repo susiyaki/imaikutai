@@ -27,9 +27,17 @@ exports.insertSeedsToStores = functions
     const randRange = (min, max) =>
       Math.floor((Math.random() * (max - min) + min) * 1000000) / 1000000;
 
+    const thumbnailUrlList = [
+      "https://firebasestorage.googleapis.com/v0/b/going-now-e954f.appspot.com/o/yamachan.jpg?alt=media&token=e1416101-f205-42cc-8e6d-f5583ec69286",
+      "https://firebasestorage.googleapis.com/v0/b/going-now-e954f.appspot.com/o/yatai.jpg?alt=media&token=5d8b8787-2e5a-49f3-b19e-360f0f1fab1c",
+      "https://firebasestorage.googleapis.com/v0/b/going-now-e954f.appspot.com/o/yatainakasu.jpg?alt=media&token=7aa0fa48-a2cb-47ac-9fdb-5966a97f1825"
+    ];
+
     _.times(count, i => {
+      const filledSeats = parseInt(randRange(3, 15));
       const data = {
         name: `屋台${i + 1}`,
+        thumbnailUrl: thumbnailUrlList[i % 3],
         location: {
           lat: randRange(latMin, latMax),
           lng: randRange(lngMin, lngMax)
@@ -40,26 +48,38 @@ exports.insertSeedsToStores = functions
           close: new Date(),
           holiday: "不定休"
         },
-        menu: [
+        menus: [
           {
             name: "ラーメン",
             price: 600,
+            description: "背脂たっぷり博多とんこつラーメン",
             imageUrl:
               "https://firebasestorage.googleapis.com/v0/b/going-now-e954f.appspot.com/o/%E3%83%A9%E3%83%BC%E3%83%A1%E3%83%B31.jpeg?alt=media&token=b6f593a2-2db7-4e35-8a89-b82f6b6c3e8d"
           },
           {
             name: "特製ラーメン",
             price: 1000,
+            description: "特製のとろとろ煮玉子がオススメです",
             imageUrl:
               "https://firebasestorage.googleapis.com/v0/b/going-now-e954f.appspot.com/o/%E3%83%A9%E3%83%BC%E3%83%A1%E3%83%B32.jpeg?alt=media&token=b214bb7a-3e00-4256-ad2f-7de67f596cbc"
           },
           {
             name: "オリジナルラーメン",
             price: 1500,
+            description: "最近噂の新メニュー",
             imageUrl:
               "https://firebasestorage.googleapis.com/v0/b/going-now-e954f.appspot.com/o/%E3%83%A9%E3%83%BC%E3%83%A1%E3%83%B32.jpeg?alt=media&token=b214bb7a-3e00-4256-ad2f-7de67f596cbc"
+          },
+          {
+            name: "おでん",
+            description: "出汁がじっくり染み込んだおいしいおでん",
+            price: 200,
+            imageUrl:
+              "https://firebasestorage.googleapis.com/v0/b/going-now-e954f.appspot.com/o/%E3%81%8A%E3%81%A6%E3%82%99%E3%82%93.jpeg?alt=media&token=1f805abe-18a5-4bb7-a6c1-812b045ffdb4"
           }
-        ]
+        ],
+        seats: filledSeats + parseInt(randRange(0, 5)),
+        filledSeats: filledSeats
       };
 
       batch.set(storesRef.doc(), data);
