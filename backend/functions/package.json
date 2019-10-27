@@ -13,9 +13,17 @@
     "node": "10"
   },
   "dependencies": {
+    "child_process": "^1.0.2",
     "firebase-admin": "^8.0.0",
     "firebase-functions": "^3.1.0",
-    "python-shell": "^1.0.8"
+    "json-groupby": "^1.1.0",
+    "linq": "^3.2.1",
+    "node-linq": "https://github.com/wearefractal/node-linq/tarball/master",
+    "python-shell": "^1.0.8",
+    "request": "^2.88.0",
+    "simple-statistics": "^7.0.5",
+    "underscore": "^1.9.1",
+    "xml2json": "^0.11.2"
   },
   "devDependencies": {
     "eslint": "^5.12.0",

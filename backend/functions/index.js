@@ -15,6 +15,7 @@ const enterAndLeavesRef = db.collection("EnterAndLeaves");
 exports.insertSeedsToStores = functions
   .region(locationId)
   .https.onRequest((req, res) => {
+    console.log('exports.insertSeedsToStores start');
     const batch = db.batch();
 
     const count = 10;
@@ -39,7 +40,7 @@ exports.insertSeedsToStores = functions
 
       batch.set(storesRef.doc(), data);
     });
-
+    console.log('exports.insertSeedsToStores end');
     return batch
       .commit()
       .then(() => res.status(200).send("success created seed."))
