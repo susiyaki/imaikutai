@@ -15,6 +15,7 @@ const enterAndLeavesRef = db.collection("EnterAndLeaves");
 exports.insertSeedsToStores = functions
   .region(locationId)
   .https.onRequest((req, res) => {
+    console.log('exports.insertSeedsToStores start');
     const batch = db.batch();
 
     const count = 10;
@@ -39,7 +40,7 @@ exports.insertSeedsToStores = functions
 
       batch.set(storesRef.doc(), data);
     });
-
+    console.log('exports.insertSeedsToStores end');
     return batch
       .commit()
       .then(() => res.status(200).send("success created seed."))
@@ -97,16 +98,19 @@ exports.insertSeedsToEnterAndLeave = functions
 
 // 後で名前変える
 exports.AggregateStayingTime= functions
+   console.log('exports.AggregateStayingTime start');
    .region(locationId)
    .https
    .onRequest(async (req, res) => {
      const enterAndLeaves = await getAllEnterAndLeaves();
  
+     console.log('exports.AggregateStayingTime2 start');
      // データ集計API叩く
      console.log(enterAndLeaves)
      res.send(enterAndLeaves)
      //
      // 集計データを元に込具合を更新
+     console.log('exports.AggregateStayingTime end');
    });
 //exports.AggregateStayingTime= functions
 //   .region(locationId)
@@ -124,19 +128,21 @@ exports.AggregateStayingTime= functions
 const getAllEnterAndLeaves = () => {
   let result = [];
 
+  console.log('getAllEnterAndLeaves start')
   enterAndLeavesRef
     .get()
     .then(querySnapshot => {
       querySnapshot.forEach(doc => {
         let data = doc.data();
         data.enteringTime = data.enteringTime.toDate();
-        data.liavingTime = data.leavingTime.toDate();
+        data.leavingTime = data.leavingTime.toDate();
 
         result.push(data);
       });
       return result;
     })
     .catch(e => console.log(e.message));
+  console.log('getAllEnterAndLeaves end')
 };
 
 
