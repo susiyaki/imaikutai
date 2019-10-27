@@ -140,6 +140,46 @@ exports.insertSeedsToEnterAndLeave = functions
       .catch(e => res.status(500).send("faild created seed."));
   });
 
+exports.incrementCustomer = functions
+  .region(locationId)
+  .https.onRequest(async (req, res) => {
+    const docId = "h8iwbWVZ7qWdqwRVgAEN";
+    const store = await storesRef.doc(docId).get(doc => {
+      return doc.data();
+    });
+    console.log(store);
+    console.log(store.filledSeats + 1);
+
+    if (store.filledSeats < store.seats) {
+      storesRef
+        .doc(docId)
+        .update({ filledSeats: store.filledSeats + 1 })
+        .then(() => res.status(200).send("incremented"))
+        .catch(e => res.status(500).send("faild increment"));
+    } else {
+      res.status(200).send("store is filled");
+    }
+  });
+
+exports.decrementCustomer = functions
+  .region(locationId)
+  .https.onRequest(async (req, res) => {
+    const docId = "h8iwbWVZ7qWdqwRVgAEN";
+    const store = await storesRef.doc(docId).get(doc => {
+      return doc.data();
+    });
+
+    if (store.filledSeats !== 0) {
+      storesRef
+        .doc(docId)
+        .update({ filledSeats: store.filledSeats - 1 })
+        .then(() => res.status(200).send("decremented"))
+        .catch(e => res.status(500).send("faild decrement"));
+    } else {
+      res.status(200).send("store is empty");
+    }
+  });
+
 // 後で名前変える
 exports.AggregateStayingTime = functions
   .region(locationId)

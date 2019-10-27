@@ -115,7 +115,9 @@ export default class extends React.Component {
                   lat={store.location.lat}
                   lng={store.location.lng}
                   onClick={() => this.handleClickPin(store.docId)}
-                  color="orange"
+                  color={
+                    store.filledSeats === store.seats ? "#ffff99" : "orange"
+                  }
                 />
               ))}
           </GoogleMapReact>
