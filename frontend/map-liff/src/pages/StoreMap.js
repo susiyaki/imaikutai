@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { db } from "./firebase";
+import { db } from "../firebase";
 import GoogleMapReact from "google-map-react";
-import StoreDetail from "./StoreDetail";
+import StoreDetail from "../components/StoreDetail";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons";
 
